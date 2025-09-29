@@ -2,6 +2,7 @@
 #include "user/user.h"
 #include "kernel/fcntl.h"
 
+// memdump
 void memdump(char *fmt, char *data);
 
 int
@@ -9,47 +10,46 @@ main(int argc, char *argv[])
 {
   if(argc == 1){
     printf("Example 1:\n");
-    int a[2] = { 61810, 2025 };
-    memdump("ii", (char*) a);
+    int arr[2] = { 61810, 2025 };
+    memdump("ii", (char*) arr);
     
     printf("Example 2:\n");
     memdump("S", "a string");
     
     printf("Example 3:\n");
-    char *s = "another";
-    memdump("s", (char *) &s);
+    char *st = "another";
+    memdump("s", (char *) &st);
 
-    struct sss {
-      char *ptr;
-      int num1;
-      short num2;
-      char byte;
-      char bytes[8];
-    } example;
+    struct thing {
+      char *p;
+      int n1;
+      short n2;
+      char ch;
+      char words[8];
+    } ex;
     
-    example.ptr = "hello";
-    example.num1 = 1819438967;
-    example.num2 = 100;
-    example.byte = 'z';
-    strcpy(example.bytes, "xyzzy");
+    ex.p = "hello";
+    ex.n1 = 1819438967;
+    ex.n2 = 100;
+    ex.ch = 'z';
+    strcpy(ex.words, "xyzzy");
     
     printf("Example 4:\n");
-    memdump("pihcS", (char*) &example);
+    memdump("pihcS", (char*) &ex);
     
     printf("Example 5:\n");
-    memdump("sccccc", (char*) &example);
+    memdump("sccccc", (char*) &ex);
   } else if(argc == 2){
-    // format in argv[1], up to 512 bytes of data from standard input.
-    char data[512];
-    int n = 0;
-    memset(data, '\0', sizeof(data));
-    while(n < sizeof(data)){
-      int nn = read(0, data + n, sizeof(data) - n);
-      if(nn <= 0)
+    char buf[512];
+    int k = 0;
+    memset(buf, '\0', sizeof(buf));
+    while(k < sizeof(buf)){
+      int more = read(0, buf + k, sizeof(buf) - k);
+      if(more <= 0)
         break;
-      n += nn;
+      k += more;
     }
-    memdump(argv[1], data);
+    memdump(argv[1], buf);
   } else {
     printf("Usage: memdump [format]\n");
     exit(1);
@@ -60,6 +60,42 @@ main(int argc, char *argv[])
 void
 memdump(char *fmt, char *data)
 {
-  // Your code here.
-
+  char *q = data;  // move step by step
+  for (int j = 0; fmt[j] != '\0'; j++) {
+    char f = fmt[j];
+    if(f == 'i'){   // int 4 byte
+      int *x = (int *)q;
+      printf("%d\n", *x);
+      q += 4;
+    }
+    else if(f == 'p'){  // pointer 8 byte
+      long long *y = (long long *)q;
+      printf("%llx\n", *y);
+      q += 8;
+    }
+    else if(f == 'h'){  // short 2 byte
+      short *z = (short *)q;
+      printf("%d\n", *z);
+      q += 2;
+    }
+    else if(f == 'c'){  // char 1 byte
+      char *ch = (char *)q;
+      printf("%c\n", *ch);
+      q += 1;
+    }
+    else if(f == 's'){  // pointer to string
+      char **pp = (char **)q;
+      printf("%s\n", *pp);
+      q += 8;
+    }
+    else if(f == 'S'){  // string in data
+      char *str = (char *)q;
+      printf("%s\n", str);
+      q += strlen(str) + 1; // skip after \0
+    }
+    else{
+      printf("bad fmt: %c\n", f);
+    }
+  }
 }
+
