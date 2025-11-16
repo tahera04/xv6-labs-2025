@@ -1,0 +1,8 @@
+va 0x0 maps to physical page 0x87F22000 with permissions 0x5B, representing a valid user code/text page.
+va 0x1000 maps to physical page 0x87F1F000 with permissions 0x5B, representing another valid user code/text or data page.
+va 0x2000 maps to physical page 0x87F1E000 with permissions 0x17, representing a valid writable non-executable data/BSS page.
+va 0x3000 maps to physical page 0x87F1D000 with permissions 0x7, representing a valid writable kernel-only data page.
+va 0x4000 maps to physical page 0x87F1C000 with permissions 0xD7, representing a valid executable writable user data page.
+va 0x5000 - va 0xFFFFD000 has no entry and is unmapped.
+va 0xFFFFE000 maps to physical page 0x87F42000 with permissions 0xC7, representing the user stack page.
+va 0xFFFFF000 maps to physical page 0x80006000 with permissions 0x4B, representing the trampoline page used for switching between user and kernel mode.
